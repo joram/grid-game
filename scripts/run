@@ -1,0 +1,2 @@
+alias node=nodejs
+nodemon main.js
