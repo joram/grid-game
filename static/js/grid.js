@@ -10,6 +10,8 @@ function init_dungeon(id){
             id = "box_" + row + "_" + col
     		$element.text("(" + row + ", " + col + ")");
     		$element.attr("id", id);
+    		$element.attr("col", col);
+    		$element.attr("row", row);
             socket.emit("box details", {'x': row, 'y': col, 'id': id})
 
         }
