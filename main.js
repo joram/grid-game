@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var perlin = require('./perlin');
 
 app.use(express.static('static'));
 
@@ -23,6 +24,14 @@ function getRandomColor() {
     return color;
 }
 
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -33,7 +42,9 @@ io.on('connection', function(socket){
   });
 
   socket.on('box details', function(details){
-    details['color'] = getRandomColor()
+    r = g = b = Math.floor(perlin.get_perlin_value(details['x'], details['y']))
+//    details['color'] = getRandomColor()
+    details['color'] = rgbToHex(r, g, b)
     socket.emit("box details", details)
   });
 });
