@@ -1,2 +1,1 @@
-alias node=nodejs
-nodemon main.js
+nom run-script run

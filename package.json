@@ -1,12 +1,16 @@
 {
-  "name": "Barney Rubble",
-  "email": "b@rubble.com",
-  "url": "http://barnyrubble.tumblr.com/",
+  "name": "Grid-Game",
+  "email": "john@oram.ca",
+  "version": "0.0.1",
   "main": "main.js",
   "dependencies": {
-    "express": "^4.14.0",
-    "http": ">1.0.0",
-    "socket.io": "^1.4.8",
-    "pf-perlin": ">1.0.0"
+    "express": "~4.14.0",
+    "socket.io": "~1.4.8",
+    "pf-perlin": ">1.0.0",
+    "nodemon": "~1.10.2",
+    "npm": "~3.10.7"
+  },
+  "scripts": {
+    "run": "nodemon main.js"
   }
 }
