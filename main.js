@@ -2,7 +2,10 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var layers = require('./layers');
+var players = require('./players');
+players.setSocket(io)
+
+var dungeon = require('./dungeon');
 
 app.use(express.static('static'));
 
@@ -23,9 +26,8 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
 
-  socket.on('box details', function(details){
-    details['color'] = layers.getColor(details['x'], details['y'])
-    socket.emit("box details", details)
+  socket.on('box details', function(v){
+    dungeon.updateBoxDetails(v, socket)
   });
 });
 
@@ -33,3 +35,4 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+

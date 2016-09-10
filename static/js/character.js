@@ -19,7 +19,8 @@ function place_character(x, y, img_url){
 }
 
 function is_solid(x, y){
-    return false;
+    solid =  getVertex(x,y).attr('solid')
+    return solid == "true"
 }
 
 function can_move(x,y){
@@ -39,8 +40,8 @@ function move_character(direction){
     y = pos['y'] + offset['y'];
     if(can_move(x, y)){
         place_character(x, y);
+        infinitedrag.center(x, y);
     }
-    infinitedrag.center(x, y);
 }
 
 function init_character(){
