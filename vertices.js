@@ -1,11 +1,21 @@
 var vertices = {}
 
-defaultValues = {
-	solid: true
+valueGeneratingFunctions = {}
+
+
+function initVertex(x, y){
+    if(!(x in vertices)){
+        vertices[x] = {}
+    }
+    if(!(y in vertices[x])){
+        vertices[x][y] = {}
+    }   
 }
 
 module.exports = {
     getValue: function(x, y, key){
+
+        // get cached version
     	if(x in vertices){
 			if(y in vertices[x]){
 				if(key in vertices[x][y]){
@@ -13,15 +23,22 @@ module.exports = {
 				}
 			}
     	}
-    	return defaultValues[key]
+
+        // cache miss
+        initVertex(x, y)
+        value = valueGeneratingFunctions[key](x, y)
+        vertices[x][y][key] = value
+    	return value
     },
     setValue: function(x, y, key, value){
-    	if(!(x in vertices){
-    		vertices[x] = {}
-    	}
-    	if(!(y in vertices[y]){
-    		vertices[x][y] = {}
-    	}
+    	initVertex(x, y)
     	vertices[x][y][key] = value
+    },
+    resetVertex: function(x, y){
+        initVertex(x, y)
+        delete vertices[x][y]
+    },
+    setValueFunc: function(key, func){
+        valueGeneratingFunctions[key] = func
     }
 }

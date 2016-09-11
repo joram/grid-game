@@ -1,35 +1,44 @@
 var layers = require('./layers');
 var utils = require('./utils');
 var players = require('./players');
+var vertices = require('./vertices');
 
 var origin = {x:0, y:0}
 var tunnelEndpoints = [origin]
-var carvedVertices = [origin]
+var carvedVertices = []
 
-function isSolid(p){
+function generateIsSolid(x, y){
 	for(i=0; i<carvedVertices.length; i++){
 		v = carvedVertices[i]
-		if(utils.isEquivalent(p, v)){
-			console.log("("+v.x+", "+v.y+") is empty")
+		if(utils.isEquivalent({x:x, y:y}, v)){
 			return false
 		}
 	}
-	// console.log(p.x + ", " + p.y + " is solid")
 	return true
 }
+vertices.setValueFunc("isSolid", generateIsSolid)
 
 function carveVertex(v){
 	console.log("carving "+v.x+", "+v.y)
 	carvedVertices.push(v)
+	vertices.resetVertex(v.x, v.y)
+	
+	rgb = vertices.getValue(v.x, v.y, "PerlinRGB")
+	delta = 100
+	rgb.r = Math.max(0, rgb.r - delta)
+	rgb.g = Math.max(0, rgb.g - delta)
+	rgb.b = Math.max(0, rgb.b - delta)
+	vertices.setValue(v.x, v.y, "PerlinRGB", rgb)
+
 	updateBoxDetails(v, players.getSocket())		
 }
 
 function carveTunnel(p){
-	l = Math.floor(layers.getLayer1Value(p.x, p.y)/10)
-	d = Math.floor(layers.getLayer2Value(p.x, p.y) % 4)
+	l = Math.floor(vertices.getValue(p.x, p.y, "PerlinValue1")/10)
+	d = Math.floor(vertices.getValue(p.x, p.y, "PerlinValue2") % 4)
 	d = utils.directions[d]
 	d_delta = utils.directionDeltas[d]
-	console.log("carving tunnel from " + p + "of length " + l + "in direction: " + d)
+	console.log("carving tunnel from (" + p.x + ", " + p.y + ") of length " + l + ", in direction: " + d)
 	x = p.x
 	y = p.y
 	for(i=0; i<l; i++){
@@ -47,19 +56,8 @@ function carveDungeon(io){
 }
 
 function getDetails(x, y){
-	p = {x:x, y:y}
-	solid = isSolid(p)
-	if(!solid){
-		console.log("something is not solid!")
-
-	}
-	rgb = layers.getRGB(x, y)
-	delta = 100
-	if(!solid){
-		rgb.r = Math.max(0, rgb.r - delta)
-		rgb.g = Math.max(0, rgb.g - delta)
-		rgb.b = Math.max(0, rgb.b - delta)
-	}
+	solid = vertices.getValue(x, y, "isSolid")
+	rgb = vertices.getValue(x, y, "PerlinRGB")
   	return {
     	color: utils.rgbToHex(rgb),
         solid: solid
@@ -73,6 +71,8 @@ function updateBoxDetails(v, recipient){
     recipient.emit("box details", v)	
 }
 
+carveVertex(origin)
+carveDungeon()
 setInterval(carveDungeon, 5000);
 module.exports = {
     GetDetails: getDetails,
