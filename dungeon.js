@@ -4,8 +4,17 @@ var players = require('./players');
 var vertices = require('./vertices');
 
 var origin = {x:0, y:0}
-var tunnelEndpoints = [origin]
+var tunnelEndpoints = []
 var carvedVertices = []
+vertices.setValueFunc("isSolid", generateIsSolid)
+carveVertex(origin)
+carveTunnel(origin, "L")
+carveTunnel(origin, "R")
+carveTunnel(origin, "U")
+carveTunnel(origin, "D")
+carveDungeon()
+setInterval(carveDungeon, 5000);
+
 
 function generateIsSolid(x, y){
 	for(i=0; i<carvedVertices.length; i++){
@@ -16,7 +25,6 @@ function generateIsSolid(x, y){
 	}
 	return true
 }
-vertices.setValueFunc("isSolid", generateIsSolid)
 
 function carveVertex(v){
 	console.log("carving "+v.x+", "+v.y)
@@ -33,25 +41,29 @@ function carveVertex(v){
 	updateBoxDetails(v, players.getSocket())		
 }
 
-function carveTunnel(p){
+function carveTunnel(p, d){
 	l = Math.floor(vertices.getValue(p.x, p.y, "PerlinValue1")/10)
-	d = Math.floor(vertices.getValue(p.x, p.y, "PerlinValue2") % 4)
-	d = utils.directions[d]
 	d_delta = utils.directionDeltas[d]
 	console.log("carving tunnel from (" + p.x + ", " + p.y + ") of length " + l + ", in direction: " + d)
 	x = p.x
 	y = p.y
-	for(i=0; i<l; i++){
+	for(var i=0; i<l; i++){
 		x += d_delta.x
 		y += d_delta.y
 		carveVertex({x:x, y:y})
 	}
 
+	
+	tunnelEndpoints.push({x:x, y:y})
+
 }
 
 function carveDungeon(io){
 	if(tunnelEndpoints.length > 0){
-		carveTunnel(tunnelEndpoints.pop())
+		v = tunnelEndpoints.pop()
+		d = Math.floor(vertices.getValue(v.x, v.y, "PerlinValue2") % 4)
+		d = utils.directions[d]
+		carveTunnel(v, d)
 	}
 }
 
@@ -71,9 +83,6 @@ function updateBoxDetails(v, recipient){
     recipient.emit("box details", v)	
 }
 
-carveVertex(origin)
-carveDungeon()
-setInterval(carveDungeon, 5000);
 module.exports = {
     GetDetails: getDetails,
     updateBoxDetails: updateBoxDetails
