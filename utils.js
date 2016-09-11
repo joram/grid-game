@@ -15,6 +15,12 @@ function isEquivalent(a, b) {
 	return matches
 }
 
+function distance(a, b) {
+    x = Math.abs(a.x-b.x)
+    y = Math.abs(a.y-b.y)
+    return Math.sqrt(x*x + y*y)
+}
+
 directions = ["L", "R", "U", "D"]
 directionDeltas = {
     U: {x: 0, y:-1},
@@ -22,9 +28,11 @@ directionDeltas = {
     L: {x:-1, y: 0},
     R: {x: 1, y: 0}
 }
+
 module.exports = {
 	rgbToHex:rgbToHex,
 	isEquivalent:isEquivalent,
 	directions: directions,
-	directionDeltas: directionDeltas
+	directionDeltas: directionDeltas,
+    distance: distance
 }

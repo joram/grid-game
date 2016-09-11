@@ -22,7 +22,7 @@ function init_dungeon(id){
 
         }
     });
-    infinitedrag.center(0,0);
+    infinitedrag.center(-10, -11);
 }
 
 socket.on('box details', function(v){
