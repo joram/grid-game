@@ -28,21 +28,31 @@ var layer3 = perlin({
     max: 255
 });
 
+var layer4 = perlin({
+    dimensions: 2,
+    seed: 4,
+    wavelength: 100,
+    min: 0,
+    max: 255
+});
+
 
 // generating functions
-function generateLayer1Value(x, y){ return layer1.get(x, y) }
-function generateLayer2Value(x, y){ return layer2.get(x, y) }
-function generateLayer3Value(x, y){ return layer3.get(x, y) }
+function generateLayer1Value(x, y){ return Math.floor(layer1.get(x, y)) }
+function generateLayer2Value(x, y){ return Math.floor(layer2.get(x, y)) }
+function generateLayer3Value(x, y){ return Math.floor(layer3.get(x, y)) }
+function generateLayer4Value(x, y){ return Math.floor(layer4.get(x, y)) }
 function generateRGB(x, y){
     return {
-        r: layer1.get(x, y),
-        g: layer2.get(x, y),
-        b: layer3.get(x, y)
+        r: Math.floor(layer1.get(x, y)),
+        g: Math.floor(layer2.get(x, y)),
+        b: Math.floor(layer3.get(x, y))
     } 
 }
 
 // register for caching
-vertices.setValueFunc("PerlinValue1", generateLayer1Value)
-vertices.setValueFunc("PerlinValue2", generateLayer2Value)
-vertices.setValueFunc("PerlinValue3", generateLayer3Value)
-vertices.setValueFunc("PerlinRGB", generateRGB)
+vertices.setValueFunc("R", generateLayer1Value)
+vertices.setValueFunc("G", generateLayer2Value)
+vertices.setValueFunc("B", generateLayer3Value)
+vertices.setValueFunc("height", generateLayer4Value)
+vertices.setValueFunc("RGB", generateRGB)

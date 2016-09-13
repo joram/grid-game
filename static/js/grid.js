@@ -9,8 +9,8 @@ function getVertex(x, y){
 }
 function init_dungeon(id){
     infinitedrag = jQuery.infinitedrag("#"+id, {}, {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         start_col: 0,
         start_row: 0,
         oncreate: function($element, x, y) {
@@ -22,14 +22,14 @@ function init_dungeon(id){
 
         }
     });
-    infinitedrag.center(-10, -11);
+    infinitedrag.center(0, 0);
 }
 
 socket.on('box details', function(v){
     v.vertexId = vertexId(v.x, v.y)
     v.element = getVertex(v.x, v.y)
-    console.log(v)
     vertex = getVertex(v.x, v.y)
     vertex.css( "background-color", v.color)
     vertex.attr('solid', v.solid)
+    vertex.attr('height', v.height)
 });

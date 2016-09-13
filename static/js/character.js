@@ -45,7 +45,7 @@ function move_character(direction){
 }
 
 function init_character(){
-    place_character(-10, -11, '/images/characters/character.png');
+    place_character(-1, -8, '/images/characters/character.png');
     document.onkeydown = function( event ) {
       if(event.which == L){move_character('L');}
       if(event.which == R){move_character('R');}

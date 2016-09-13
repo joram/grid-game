@@ -4,37 +4,36 @@ var players = require('./players');
 var vertices = require('./vertices');
 
 function generateIsSolid(x, y){
-	val = vertices.getValue(x, y, "PerlinValue2")
-	empty = val < 145
-	if(!empty){
-		rgb = vertices.getValue(x, y, "PerlinRGB")
-		delta = 100
-		rgb.r = Math.max(0, rgb.r - delta)
-		rgb.g = Math.max(0, rgb.g - delta)
-		rgb.b = Math.max(0, rgb.b - delta)
-		vertices.setValue(x, y, "PerlinRGB", rgb)
+	delta = 100
+	height = vertices.getValue(x, y, "height")
+	isWater = height < 50
+	isUnderground = height > 150
+	isSolid = isWater || isUnderground
+	if(isWater){
+		rgb = vertices.getValue(x, y, "RGB")
+		rgb.r = Math.max(0, Math.max(0, rgb.r - delta))
+		rgb.g = Math.max(0, Math.max(0, rgb.g - delta))
+		rgb.b = Math.max(0, Math.min(255, rgb.b + delta))
+		vertices.setValue(x, y, "RGB", rgb)
 	}
-	return !empty
+	if(isUnderground){
+		rgb = vertices.getValue(x, y, "RGB")
+		rgb.r = Math.max(0, rgb.r/2 - 0)
+		rgb.g = Math.max(0, rgb.g/3 - 20)
+		rgb.b = Math.max(0, rgb.b/10 + 0)
+		vertices.setValue(x, y, "RGB", rgb)
+	}
+	return isSolid
 }
 vertices.setValueFunc("isSolid", generateIsSolid)
 
-function getDetails(x, y){
-	solid = vertices.getValue(x, y, "isSolid")
-	rgb = vertices.getValue(x, y, "PerlinRGB")
-  	return {
-    	color: utils.rgbToHex(rgb),
-        solid: solid
-    }
-}
-
 function updateBoxDetails(v, recipient){
-	extra_details = getDetails(v.x, v.y)
-    v['color'] = extra_details['color']
-    v['solid'] = extra_details['solid']
+    v['solid'] = vertices.getValue(v.x, v.y, "isSolid")
+    v['color'] = utils.rgbToHex(vertices.getValue(v.x, v.y, "RGB"))
+    v['height']= vertices.getValue(v.x, v.y, "height")
     recipient.emit("box details", v)	
 }
 
 module.exports = {
-    GetDetails: getDetails,
     updateBoxDetails: updateBoxDetails
 }
