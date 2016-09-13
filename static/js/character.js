@@ -16,6 +16,7 @@ function place_character(x, y, img_url){
     $character.attr('src', img_url);
     $parent = $('div[row="'+y+'"][col="'+x+'"]');
     $character.detach().appendTo($parent);
+    infinitedrag.center(x, y);
 }
 
 function is_solid(x, y){
@@ -40,12 +41,12 @@ function move_character(direction){
     y = pos['y'] + offset['y'];
     if(can_move(x, y)){
         place_character(x, y);
-        infinitedrag.center(x, y);
     }
 }
 
-function init_character(){
-    place_character(-1, -8, '/images/characters/character.png');
+function init_character(x, y){
+    place_character(x, y, '/images/characters/character.png');
+
     document.onkeydown = function( event ) {
       if(event.which == L){move_character('L');}
       if(event.which == R){move_character('R');}

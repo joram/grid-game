@@ -18,6 +18,10 @@ app.get('/grid', function(req, res){
   res.sendFile(__dirname + '/templates/grid.html');
 });
 
+app.get('/tiles', function(req, res){
+  res.sendFile(__dirname + '/templates/tiles.html');
+});
+
 io.on('connection', function(socket){
   console.log('a user connected');
 
